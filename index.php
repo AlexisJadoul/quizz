@@ -10,6 +10,7 @@ declare(strict_types=1);
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     .fade-in { animation: fadeIn .35s ease-out both; }
@@ -93,6 +94,11 @@ declare(strict_types=1);
       leaderboard: [],
       loadingScores: true,
       pollTimer: null,
+      stats: {
+        loading: false,
+        data: { services: [] },
+        chartInstances: [],
+      },
     };
 
     function shuffle(arr) {
@@ -179,6 +185,9 @@ declare(strict_types=1);
       if (view === 'leaderboard') {
         apiGetScores();
         startPolling();
+      } else if (view === 'stats') {
+        stopPolling();
+        apiGetStats();
       } else {
         stopPolling();
       }
@@ -197,6 +206,11 @@ declare(strict_types=1);
               Ultimate Quiz
             </h1>
             <p class="text-slate-500 text-lg">5 questions. 50 possibilités. Serez-vous le meilleur ?</p>
+          </div>
+
+          <div class="flex items-center gap-3 text-sm text-slate-500">
+            <div class="flex items-center gap-1">${icon('trophy', 'w-4 h-4 text-amber-500')} Classement en direct</div>
+            <button id="goStats" class="px-3 py-1 bg-white border border-slate-200 rounded-full text-xs font-semibold hover:border-indigo-200 hover:text-indigo-600 transition-colors">Stats</button>
           </div>
 
           <div class="w-full max-w-sm bg-white p-8 rounded-3xl shadow-xl border border-slate-100">
@@ -373,9 +387,87 @@ declare(strict_types=1);
             ${rows}
           </div>
 
-          <button id="backMenu" class="w-full py-4 text-slate-500 font-bold hover:text-indigo-600 transition-colors">
-            Retour au menu
-          </button>
+          <div class="grid grid-cols-2 gap-3">
+            <button id="backMenu" class="w-full py-3 text-slate-500 font-bold hover:text-indigo-600 transition-colors rounded-xl border border-slate-200">
+              Retour au menu
+            </button>
+            <button id="goStatsFromLb" class="w-full py-3 text-indigo-600 font-bold hover:bg-indigo-50 transition-colors rounded-xl border border-indigo-100">
+              Voir les stats
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderStats() {
+      const loading = state.stats.loading;
+      const services = state.stats.data.services || [];
+      const hasData = services.length > 0;
+
+      const content = loading
+        ? `<div class="p-10 text-center text-slate-400 italic">Chargement des statistiques...</div>`
+        : (!hasData
+            ? `<div class="p-10 text-center text-slate-400 italic">Aucune donnée de service pour le moment.</div>`
+            : `
+              <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-white border border-slate-100 rounded-2xl shadow-sm p-4">
+                  <div class="flex items-center justify-between mb-2">
+                    <div>
+                      <div class="text-xs uppercase font-bold text-slate-400 tracking-widest">Répartition par service</div>
+                      <div class="text-sm text-slate-600">Nombre de parties jouées</div>
+                    </div>
+                    ${icon('pie-chart', 'w-5 h-5 text-indigo-500')}
+                  </div>
+                  <canvas id="chartByGames" class="max-h-64"></canvas>
+                </div>
+
+                <div class="bg-white border border-slate-100 rounded-2xl shadow-sm p-4">
+                  <div class="flex items-center justify-between mb-2">
+                    <div>
+                      <div class="text-xs uppercase font-bold text-slate-400 tracking-widest">Meilleures moyennes</div>
+                      <div class="text-sm text-slate-600">Score moyen sur 5</div>
+                    </div>
+                    ${icon('star', 'w-5 h-5 text-yellow-500')}
+                  </div>
+                  <canvas id="chartByAverage" class="max-h-64"></canvas>
+                </div>
+              </div>
+
+              <div class="bg-white border border-slate-100 rounded-2xl shadow-sm p-4 space-y-3">
+                <div class="text-xs uppercase font-bold text-slate-400 tracking-widest">Classement par service</div>
+                ${services.map((s, i) => {
+                  const badge = i === 0 ? 'bg-yellow-100 text-yellow-700' : i === 1 ? 'bg-slate-100 text-slate-700' : i === 2 ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-500';
+                  return `
+                    <div class="flex items-center justify-between p-3 rounded-xl ${i < 3 ? 'bg-slate-50' : ''}">
+                      <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${badge}">${i + 1}</span>
+                        <div>
+                          <div class="font-bold text-slate-700">${escapeHtml(s.service)}</div>
+                          <div class="text-xs text-slate-500">${s.games} parties · ${s.total_points} pts cumulés</div>
+                        </div>
+                      </div>
+                      <div class="flex items-center gap-1">
+                        <span class="text-xl font-black text-indigo-600">${Number(s.avg_score).toFixed(2)}</span>
+                        <span class="text-xs text-slate-400 font-bold">/ 5</span>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            `
+          );
+
+      return `
+        <div class="max-w-5xl mx-auto space-y-6 fade-in">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-3xl font-black text-slate-800">Statistiques par service</h2>
+              <p class="text-slate-500">Qui répond le mieux ? Visualisez les performances en un coup d'œil.</p>
+            </div>
+            <button id="backFromStats" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:text-indigo-600 hover:border-indigo-200 transition-colors">Retour</button>
+          </div>
+
+          ${content}
         </div>
       `;
     }
@@ -395,6 +487,7 @@ declare(strict_types=1);
         const serviceInput = document.getElementById('playerService');
         const btn = document.getElementById('startBtn');
         const lb = document.getElementById('goLeaderboard');
+        const statsBtn = document.getElementById('goStats');
 
         input?.addEventListener('input', (e) => {
           state.playerName = e.target.value;
@@ -406,6 +499,7 @@ declare(strict_types=1);
         });
         btn?.addEventListener('click', startNewGame);
         lb?.addEventListener('click', () => setView('leaderboard'));
+        statsBtn?.addEventListener('click', () => setView('stats'));
       }
 
       if (state.gameState === 'playing') {
@@ -421,6 +515,11 @@ declare(strict_types=1);
 
       if (state.gameState === 'leaderboard') {
         document.getElementById('backMenu')?.addEventListener('click', () => setView('menu'));
+        document.getElementById('goStatsFromLb')?.addEventListener('click', () => setView('stats'));
+      }
+
+      if (state.gameState === 'stats') {
+        document.getElementById('backFromStats')?.addEventListener('click', () => setView('menu'));
       }
     }
 
@@ -430,10 +529,89 @@ declare(strict_types=1);
       if (state.gameState === 'playing') html = renderPlaying();
       if (state.gameState === 'finished') html = renderFinished();
       if (state.gameState === 'leaderboard') html = renderLeaderboard();
+      if (state.gameState === 'stats') html = renderStats();
 
       $app.innerHTML = html;
       lucide.createIcons();
+      if (state.gameState === 'stats') buildCharts();
       wireEvents();
+    }
+
+    async function apiGetStats() {
+      try {
+        state.stats.loading = true;
+        render();
+        const res = await fetch('api/stats.php', { cache: 'no-store' });
+        const data = await res.json();
+        state.stats.data = data.ok ? data.stats : { services: [] };
+      } catch (e) {
+        state.stats.data = { services: [] };
+      } finally {
+        state.stats.loading = false;
+        render();
+      }
+    }
+
+    function buildCharts() {
+      state.stats.chartInstances.forEach((c) => c.destroy());
+      state.stats.chartInstances = [];
+
+      if (state.stats.loading) return;
+      const services = state.stats.data.services || [];
+      if (!services.length) return;
+
+      const palette = ['#6366f1', '#a855f7', '#06b6d4', '#f97316', '#10b981', '#f59e0b', '#ef4444', '#3b82f6'];
+      const labels = services.map((s) => s.service);
+      const byGamesCtx = document.getElementById('chartByGames');
+      const byAverageCtx = document.getElementById('chartByAverage');
+
+      if (byGamesCtx) {
+        const chart = new Chart(byGamesCtx, {
+          type: 'pie',
+          data: {
+            labels,
+            datasets: [{
+              data: services.map((s) => s.games),
+              backgroundColor: labels.map((_, i) => palette[i % palette.length]),
+            }],
+          },
+          options: {
+            plugins: {
+              legend: { position: 'bottom' },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => `${ctx.label}: ${ctx.raw} parties`,
+                },
+              },
+            },
+          },
+        });
+        state.stats.chartInstances.push(chart);
+      }
+
+      if (byAverageCtx) {
+        const chart = new Chart(byAverageCtx, {
+          type: 'doughnut',
+          data: {
+            labels,
+            datasets: [{
+              data: services.map((s) => Number(s.avg_score)),
+              backgroundColor: labels.map((_, i) => palette[(i + 3) % palette.length]),
+            }],
+          },
+          options: {
+            plugins: {
+              legend: { position: 'bottom' },
+              tooltip: {
+                callbacks: {
+                  label: (ctx) => `${ctx.label}: ${ctx.raw} / 5 de moyenne`,
+                },
+              },
+            },
+          },
+        });
+        state.stats.chartInstances.push(chart);
+      }
     }
 
     render();
