@@ -489,13 +489,18 @@ declare(strict_types=1);
         const lb = document.getElementById('goLeaderboard');
         const statsBtn = document.getElementById('goStats');
 
+        const refreshStartBtnState = () => {
+          if (!btn) return;
+          btn.disabled = !(state.playerName.trim() && state.playerService.trim());
+        };
+
         input?.addEventListener('input', (e) => {
           state.playerName = e.target.value;
-          render();
+          refreshStartBtnState();
         });
         serviceInput?.addEventListener('input', (e) => {
           state.playerService = e.target.value;
-          render();
+          refreshStartBtnState();
         });
         btn?.addEventListener('click', startNewGame);
         lb?.addEventListener('click', () => setView('leaderboard'));
