@@ -85,6 +85,7 @@ declare(strict_types=1);
     const state = {
       gameState: 'menu', // menu | playing | finished | leaderboard
       playerName: '',
+      playerService: '',
       currentQuestions: [],
       currentIndex: 0,
       score: 0,
@@ -113,12 +114,12 @@ declare(strict_types=1);
       }
     }
 
-    async function apiAddScore(name, score) {
+    async function apiAddScore(name, service, score) {
       try {
         await fetch('api/add_score.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, score })
+          body: JSON.stringify({ name, service, score })
         });
       } catch (e) {}
     }
@@ -133,7 +134,7 @@ declare(strict_types=1);
     }
 
     function startNewGame() {
-      if (!state.playerName.trim()) return;
+      if (!state.playerName.trim() || !state.playerService.trim()) return;
       state.currentQuestions = shuffle(QUESTIONS_DATABASE).slice(0, 5);
       state.currentIndex = 0;
       state.score = 0;
@@ -146,7 +147,7 @@ declare(strict_types=1);
     function finishGame(finalScore) {
       state.gameState = 'finished';
       render();
-      apiAddScore(state.playerName.trim(), finalScore).then(() => {
+      apiAddScore(state.playerName.trim(), state.playerService.trim(), finalScore).then(() => {
         apiGetScores();
       });
     }
@@ -213,9 +214,23 @@ declare(strict_types=1);
               </div>
             </div>
 
+            <div class="mb-6">
+              <label class="block text-sm font-semibold text-slate-700 mb-2">Votre Service</label>
+              <div class="relative">
+                ${icon('building-2', 'absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5')}
+                <input
+                  id="playerService"
+                  type="text"
+                  value="${escapeHtml(state.playerService)}"
+                  placeholder="Ex: Ressources Humaines"
+                  class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                />
+              </div>
+            </div>
+
             <button
               id="startBtn"
-              ${state.playerName.trim() ? '' : 'disabled'}
+              ${state.playerName.trim() && state.playerService.trim() ? '' : 'disabled'}
               class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               ${icon('play', 'w-5 h-5')} Commencer
@@ -331,7 +346,10 @@ declare(strict_types=1);
                     <div class="flex items-center justify-between p-4 px-6 hover:bg-slate-50 transition-colors">
                       <div class="flex items-center gap-4">
                         <span class="w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm ${badge}">${i + 1}</span>
-                        <span class="font-bold text-slate-700">${escapeHtml(e.name || 'Anonyme')}</span>
+                        <div class="flex flex-col">
+                          <span class="font-bold text-slate-700">${escapeHtml(e.name || 'Anonyme')}</span>
+                          ${e.service ? `<span class="text-xs text-slate-500">${escapeHtml(e.service)}</span>` : ''}
+                        </div>
                       </div>
                       <div class="flex items-center gap-2">
                         <span class="text-xl font-black text-indigo-600">${Number(e.score) || 0}</span>
@@ -374,11 +392,16 @@ declare(strict_types=1);
     function wireEvents() {
       if (state.gameState === 'menu') {
         const input = document.getElementById('playerName');
+        const serviceInput = document.getElementById('playerService');
         const btn = document.getElementById('startBtn');
         const lb = document.getElementById('goLeaderboard');
 
         input?.addEventListener('input', (e) => {
           state.playerName = e.target.value;
+          render();
+        });
+        serviceInput?.addEventListener('input', (e) => {
+          state.playerService = e.target.value;
           render();
         });
         btn?.addEventListener('click', startNewGame);

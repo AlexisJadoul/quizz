@@ -13,10 +13,14 @@ if (!is_array($payload)) {
 }
 
 $name = trim((string)($payload['name'] ?? ''));
+$service = trim((string)($payload['service'] ?? ''));
 $score = $payload['score'] ?? null;
 
 if ($name === '' || mb_strlen($name) > 60) {
   json_out(['ok' => false, 'error' => 'Nom invalide (1 à 60 caractères)'], 400);
+}
+if ($service === '' || mb_strlen($service) > 120) {
+  json_out(['ok' => false, 'error' => 'Service invalide (1 à 120 caractères)'], 400);
 }
 if (!is_int($score) && !(is_string($score) && ctype_digit($score))) {
   json_out(['ok' => false, 'error' => 'Score invalide'], 400);
@@ -28,9 +32,11 @@ if ($score < 0 || $score > 5) {
 
 try {
   $pdo = db();
-  $stmt = $pdo->prepare("INSERT INTO scores (name, score, ip, user_agent) VALUES (:name, :score, :ip, :ua)");
+  ensureServiceColumn($pdo);
+  $stmt = $pdo->prepare("INSERT INTO scores (name, service, score, ip, user_agent) VALUES (:name, :service, :score, :ip, :ua)");
   $stmt->execute([
     ':name' => $name,
+    ':service' => $service,
     ':score' => $score,
     ':ip' => client_ip_bin(),
     ':ua' => substr((string)($_SERVER['HTTP_USER_AGENT'] ?? ''), 0, 255),

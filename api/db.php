@@ -25,6 +25,12 @@ function json_out(array $data, int $code = 200): void {
   exit;
 }
 
+function ensureServiceColumn(PDO $pdo): void {
+  try {
+    $pdo->exec("ALTER TABLE scores ADD COLUMN service VARCHAR(120) NULL AFTER name");
+  } catch (Throwable $e) {}
+}
+
 function client_ip_bin(): ?string {
   $ip = $_SERVER['REMOTE_ADDR'] ?? null;
   if (!$ip) return null;
