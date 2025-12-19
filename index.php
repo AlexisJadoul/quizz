@@ -257,6 +257,12 @@ declare(strict_types=1);
           >
             ${icon('trophy', 'w-4 h-4')} Voir le classement
           </button>
+          <a
+            href="add_question.php"
+            class="text-slate-500 font-semibold hover:text-indigo-600 hover:underline flex items-center gap-1"
+          >
+            ${icon('plus-circle', 'w-4 h-4')} Ajouter une question
+          </a>
         </div>
       `;
     }
