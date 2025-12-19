@@ -28,59 +28,6 @@ declare(strict_types=1);
   </div>
 
   <script>
-    const QUESTIONS_DATABASE = [
-      { q: "Quelle est la capitale de la France ?", a: ["Paris", "Lyon", "Marseille", "Bordeaux"], correct: 0 },
-      { q: "Qui a peint la Joconde ?", a: ["Van Gogh", "Picasso", "Léonard de Vinci", "Monet"], correct: 2 },
-      { q: "Quel est le plus grand océan du monde ?", a: ["Atlantique", "Indien", "Arctique", "Pacifique"], correct: 3 },
-      { q: "Combien de planètes compte le système solaire ?", a: ["7", "8", "9", "10"], correct: 1 },
-      { q: "Quelle est la monnaie du Japon ?", a: ["Yuan", "Won", "Yen", "Dollar"], correct: 2 },
-      { q: "Quel pays a gagné la Coupe du Monde 2018 ?", a: ["Brésil", "Allemagne", "France", "Croatie"], correct: 2 },
-      { q: "Quel est l'élément chimique du symbole Au ?", a: ["Argent", "Or", "Cuivre", "Fer"], correct: 1 },
-      { q: "Quelle est la montagne la plus haute du monde ?", a: ["K2", "Mont Blanc", "Everest", "Annapurna"], correct: 2 },
-      { q: "Qui a écrit 'Les Misérables' ?", a: ["Molière", "Victor Hugo", "Zola", "Balzac"], correct: 1 },
-      { q: "Quel est le plus petit pays du monde ?", a: ["Monaco", "Malte", "Vatican", "Saint-Marin"], correct: 2 },
-      { q: "En quelle année l'homme a-t-il marché sur la Lune ?", a: ["1965", "1969", "1972", "1959"], correct: 1 },
-      { q: "Quelle est la langue la plus parlée au monde ?", a: ["Espagnol", "Anglais", "Chinois Mandarin", "Hindi"], correct: 2 },
-      { q: "Quel organe pompe le sang ?", a: ["Poumons", "Foie", "Cerveau", "Cœur"], correct: 3 },
-      { q: "Quel animal est le plus rapide ?", a: ["Guépard", "Léopard", "Lion", "Antilope"], correct: 0 },
-      { q: "Quelle planète est surnommée la Planète Rouge ?", a: ["Vénus", "Jupiter", "Mars", "Saturne"], correct: 2 },
-      { q: "Combien de cœurs possède une pieuvre ?", a: ["1", "2", "3", "4"], correct: 2 },
-      { q: "Quel est le fleuve le plus long du monde ?", a: ["Nil", "Amazone", "Mississippi", "Yangtsé"], correct: 1 },
-      { q: "Qui a inventé le téléphone ?", a: ["Edison", "Graham Bell", "Tesla", "Newton"], correct: 1 },
-      { q: "De quel pays vient le sushi ?", a: ["Chine", "Thaïlande", "Japon", "Corée"], correct: 2 },
-      { q: "Combien y a-t-il de secondes dans une heure ?", a: ["60", "360", "1200", "3600"], correct: 3 },
-      { q: "Quelle est la capitale de l'Italie ?", a: ["Milan", "Rome", "Naples", "Venise"], correct: 1 },
-      { q: "Quel métal est liquide à température ambiante ?", a: ["Plomb", "Mercure", "Étain", "Aluminium"], correct: 1 },
-      { q: "Qui est l'auteur de Harry Potter ?", a: ["Stephen King", "J.K. Rowling", "George R.R. Martin", "Tolkien"], correct: 1 },
-      { q: "Quel pays possède la Tour de Pise ?", a: ["Espagne", "France", "Grèce", "Italie"], correct: 3 },
-      { q: "Quelle est la couleur de l'émeraude ?", a: ["Bleu", "Rouge", "Vert", "Jaune"], correct: 2 },
-      { q: "Combien d'os y a-t-il dans le corps humain adulte ?", a: ["186", "206", "226", "256"], correct: 1 },
-      { q: "Quel est l'animal terrestre le plus lourd ?", a: ["Rhinocéros", "Hippopotame", "Éléphant d'Afrique", "Girafe"], correct: 2 },
-      { q: "Dans quelle ville se trouve la Statue de la Liberté ?", a: ["Washington", "New York", "Los Angeles", "Chicago"], correct: 1 },
-      { q: "Quelle est la capitale de l'Espagne ?", a: ["Barcelone", "Valence", "Madrid", "Séville"], correct: 2 },
-      { q: "Qui a découvert la gravité ?", a: ["Einstein", "Darwin", "Galilée", "Newton"], correct: 3 },
-      { q: "Quel est le gaz le plus présent dans l'air ?", a: ["Oxygène", "Azote", "Carbone", "Hydrogène"], correct: 1 },
-      { q: "Quel instrument de musique a 88 touches ?", a: ["Guitare", "Violon", "Piano", "Flûte"], correct: 2 },
-      { q: "Combien y a-t-il de continents ?", a: ["5", "6", "7", "8"], correct: 2 },
-      { q: "Quel est l'oiseau qui ne vole pas ?", a: ["Aigle", "Autruche", "Moineau", "Perroquet"], correct: 1 },
-      { q: "Quelle est la capitale de l'Allemagne ?", a: ["Munich", "Francfort", "Hambourg", "Berlin"], correct: 3 },
-      { q: "Qui était Napoléon Bonaparte ?", a: ["Un peintre", "Un empereur", "Un musicien", "Un écrivain"], correct: 1 },
-      { q: "Combien d'États compte les USA ?", a: ["48", "50", "52", "55"], correct: 1 },
-      { q: "Quel est le fruit de l'amandier ?", a: ["Amande", "Noix", "Noisette", "Pistache"], correct: 0 },
-      { q: "Quel célèbre détective vit au 221B Baker Street ?", a: ["Poirot", "Sherlock Holmes", "Lupin", "Maigret"], correct: 1 },
-      { q: "Quelle est la monnaie de l'Angleterre ?", a: ["Euro", "Livre Sterling", "Dollar", "Franc"], correct: 1 },
-      { q: "Quel est le pays du sirop d'érable ?", a: ["USA", "Canada", "Suède", "Norvège"], correct: 1 },
-      { q: "Comment s'appelle le bébé du cheval ?", a: ["Veau", "Poulain", "Chevreau", "Agneau"], correct: 1 },
-      { q: "Quelle est la capitale de l'Egypte ?", a: ["Le Caire", "Alexandrie", "Louxor", "Gizeh"], correct: 0 },
-      { q: "Quel est le plus grand désert du monde ?", a: ["Sahara", "Gobi", "Antarctique", "Kalahari"], correct: 2 },
-      { q: "Quel organe sert à respirer ?", a: ["Estomac", "Rein", "Poumon", "Cœur"], correct: 2 },
-      { q: "Quel héros porte un bouclier étoilé ?", a: ["Iron Man", "Thor", "Captain America", "Spider-Man"], correct: 2 },
-      { q: "Dans quel film trouve-t-on Simba ?", a: ["Bambi", "Le Roi Lion", "Aladdin", "Tarzan"], correct: 1 },
-      { q: "Quelle est la capitale du Portugal ?", a: ["Porto", "Lisbonne", "Faro", "Braga"], correct: 1 },
-      { q: "Combien de côtés a un hexagone ?", a: ["5", "6", "7", "8"], correct: 1 },
-      { q: "Quelle est la couleur du rubis ?", a: ["Bleu", "Jaune", "Rouge", "Vert"], correct: 2 }
-    ];
-
     const $app = document.getElementById('app');
 
     const state = {
@@ -94,6 +41,9 @@ declare(strict_types=1);
       leaderboard: [],
       loadingScores: true,
       pollTimer: null,
+      questionsLoading: false,
+      questionsError: '',
+      totalQuestions: 5,
       stats: {
         loading: false,
         data: { services: [] },
@@ -103,6 +53,15 @@ declare(strict_types=1);
 
     function shuffle(arr) {
       return [...arr].sort(() => 0.5 - Math.random());
+    }
+
+    async function apiGetQuestions(limit = 5) {
+      const res = await fetch(`api/questions.php?limit=${limit}`, { cache: 'no-store' });
+      const data = await res.json();
+      if (!data.ok || !Array.isArray(data.questions) || data.questions.length === 0) {
+        throw new Error(data.message || "Aucune question disponible en base.");
+      }
+      return data.questions;
     }
 
     async function apiGetScores() {
@@ -139,15 +98,27 @@ declare(strict_types=1);
       state.pollTimer = null;
     }
 
-    function startNewGame() {
+    async function startNewGame() {
       if (!state.playerName.trim() || !state.playerService.trim()) return;
-      state.currentQuestions = shuffle(QUESTIONS_DATABASE).slice(0, 5);
-      state.currentIndex = 0;
-      state.score = 0;
-      state.selectedAnswer = null;
-      state.gameState = 'playing';
-      stopPolling();
+      if (state.questionsLoading) return;
+      state.questionsLoading = true;
+      state.questionsError = '';
       render();
+      try {
+        const questions = await apiGetQuestions(5);
+        state.currentQuestions = shuffle(questions);
+        state.totalQuestions = state.currentQuestions.length;
+        state.currentIndex = 0;
+        state.score = 0;
+        state.selectedAnswer = null;
+        state.gameState = 'playing';
+        stopPolling();
+      } catch (error) {
+        state.questionsError = error?.message || "Impossible de charger les questions.";
+      } finally {
+        state.questionsLoading = false;
+        render();
+      }
     }
 
     function finishGame(finalScore) {
@@ -170,7 +141,7 @@ declare(strict_types=1);
       render();
 
       setTimeout(() => {
-        if (state.currentIndex < 4) {
+        if (state.currentIndex < state.totalQuestions - 1) {
           state.currentIndex += 1;
           state.selectedAnswer = null;
           render();
@@ -199,13 +170,19 @@ declare(strict_types=1);
     }
 
     function renderMenu() {
+      const statusMessage = state.questionsLoading
+        ? `<div class="text-xs text-slate-400 font-semibold italic">Chargement des questions...</div>`
+        : (state.questionsError
+            ? `<div class="text-xs text-red-500 font-semibold">${escapeHtml(state.questionsError)}</div>`
+            : '');
+
       return `
         <div class="flex flex-col items-center justify-center space-y-8 fade-in">
           <div class="text-center">
             <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600 mb-4">
               Ultimate Quiz
             </h1>
-            <p class="text-slate-500 text-lg">5 questions. 50 possibilités. Serez-vous le meilleur ?</p>
+            <p class="text-slate-500 text-lg">5 questions tirées de la base. Serez-vous le meilleur ?</p>
           </div>
 
           <div class="flex items-center gap-3 text-sm text-slate-500">
@@ -244,11 +221,12 @@ declare(strict_types=1);
 
             <button
               id="startBtn"
-              ${state.playerName.trim() && state.playerService.trim() ? '' : 'disabled'}
+              ${(state.playerName.trim() && state.playerService.trim() && !state.questionsLoading) ? '' : 'disabled'}
               class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              ${icon('play', 'w-5 h-5')} Commencer
+              ${icon('play', 'w-5 h-5')} ${state.questionsLoading ? 'Chargement...' : 'Commencer'}
             </button>
+            ${statusMessage ? `<div class="mt-3 text-center">${statusMessage}</div>` : ''}
           </div>
 
           <button
@@ -269,7 +247,7 @@ declare(strict_types=1);
 
     function renderPlaying() {
       const q = state.currentQuestions[state.currentIndex];
-      const progress = ((state.currentIndex + 1) / 5) * 100;
+      const progress = ((state.currentIndex + 1) / state.totalQuestions) * 100;
 
       const answers = q.a.map((ans, idx) => {
         let cls = "bg-white hover:bg-slate-50 border-slate-200";
@@ -299,7 +277,7 @@ declare(strict_types=1);
         <div class="w-full max-w-2xl mx-auto space-y-8 fade-in">
           <div class="flex justify-between items-end px-2">
             <div>
-              <span class="text-indigo-600 font-bold text-sm uppercase tracking-widest">Question ${state.currentIndex + 1} / 5</span>
+              <span class="text-indigo-600 font-bold text-sm uppercase tracking-widest">Question ${state.currentIndex + 1} / ${state.totalQuestions}</span>
               <h2 class="text-2xl font-bold text-slate-800 mt-1">${escapeHtml(q.q)}</h2>
             </div>
             <div class="text-right">
@@ -334,7 +312,7 @@ declare(strict_types=1);
 
           <div class="bg-white p-8 rounded-3xl shadow-xl max-w-sm mx-auto border border-slate-100">
             <div class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Score Final</div>
-            <div class="text-6xl font-black text-indigo-600 mb-6">${state.score} <span class="text-2xl text-slate-300">/ 5</span></div>
+            <div class="text-6xl font-black text-indigo-600 mb-6">${state.score} <span class="text-2xl text-slate-300">/ ${state.totalQuestions}</span></div>
 
             <div class="space-y-3">
               <button id="seeLeaderboard" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition-colors">
