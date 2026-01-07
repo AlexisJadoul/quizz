@@ -26,7 +26,7 @@ if (!is_int($score) && !(is_string($score) && ctype_digit($score))) {
   json_out(['ok' => false, 'error' => 'Score invalide'], 400);
 }
 $score = (int)$score;
-if ($score < 0 || $score > 5) {
+if ($score < 0 || $score > 6) {
   json_out(['ok' => false, 'error' => 'Score hors limite'], 400);
 }
 

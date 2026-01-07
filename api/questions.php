@@ -25,8 +25,8 @@ function ensureQuestionTables(PDO $pdo): void {
 }
 
 try {
-  $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 5;
-  if ($limit <= 0) $limit = 5;
+  $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 6;
+  if ($limit <= 0) $limit = 6;
   if ($limit > 20) $limit = 20;
 
   $pdo = db();
