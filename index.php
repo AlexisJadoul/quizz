@@ -43,7 +43,7 @@ declare(strict_types=1);
       pollTimer: null,
       questionsLoading: false,
       questionsError: '',
-      totalQuestions: 10,
+      totalQuestions: 6,
       stats: {
         loading: false,
         data: { services: [] },
@@ -55,7 +55,7 @@ declare(strict_types=1);
       return [...arr].sort(() => 0.5 - Math.random());
     }
 
-    async function apiGetQuestions(limit = 10) {
+    async function apiGetQuestions(limit = 6) {
       const res = await fetch(`api/questions.php?limit=${limit}`, { cache: 'no-store' });
       const data = await res.json();
       if (!data.ok || !Array.isArray(data.questions) || data.questions.length === 0) {
@@ -105,7 +105,7 @@ declare(strict_types=1);
       state.questionsError = '';
       render();
       try {
-        const questions = await apiGetQuestions(10);
+        const questions = await apiGetQuestions(6);
         state.currentQuestions = shuffle(questions);
         state.totalQuestions = state.currentQuestions.length;
         state.currentIndex = 0;
@@ -182,7 +182,7 @@ declare(strict_types=1);
             <h1 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600 mb-4">
               Ultimate Quiz
             </h1>
-            <p class="text-slate-500 text-lg">10 questions tirées de la base. Serez-vous le meilleur ?</p>
+            <p class="text-slate-500 text-lg">6 questions tirées de la base. Serez-vous le meilleur ?</p>
           </div>
 
           <div class="flex items-center gap-3 text-sm text-slate-500">
@@ -409,7 +409,7 @@ declare(strict_types=1);
                   <div class="flex items-center justify-between mb-2">
                     <div>
                       <div class="text-xs uppercase font-bold text-slate-400 tracking-widest">Meilleures moyennes</div>
-                      <div class="text-sm text-slate-600">Score moyen sur 10</div>
+                      <div class="text-sm text-slate-600">Score moyen sur 6</div>
                     </div>
                     ${icon('star', 'w-5 h-5 text-yellow-500')}
                   </div>
@@ -432,7 +432,7 @@ declare(strict_types=1);
                       </div>
                       <div class="flex items-center gap-1">
                         <span class="text-xl font-black text-indigo-600">${Number(s.avg_score).toFixed(2)}</span>
-                        <span class="text-xs text-slate-400 font-bold">/ 10</span>
+                        <span class="text-xs text-slate-400 font-bold">/ 6</span>
                       </div>
                     </div>
                   `;
@@ -593,7 +593,7 @@ declare(strict_types=1);
               legend: { position: 'bottom' },
               tooltip: {
                 callbacks: {
-                  label: (ctx) => `${ctx.label}: ${ctx.raw} / 10 de moyenne`,
+                  label: (ctx) => `${ctx.label}: ${ctx.raw} / 6 de moyenne`,
                 },
               },
             },
